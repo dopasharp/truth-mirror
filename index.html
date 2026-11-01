@@ -3,16 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>진실의 거울</title>
-<meta name="description" content="거울아 거울아, 세상에서 누가 제일…?">
-<meta property="og:title" content="🪞 진실의 거울">
-<meta property="og:description" content="거울아 거울아, 세상에서 가장 예쁜 사람은 누구니?">
-<meta name="theme-color" content="#0d0716">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪞</text></svg>">
+<title>진실의 거울 | DOPA#</title>
+<meta name="description" content="거울아 거울아, 세상에서 누가 제일…? 질문하면 진실의 거울이 답을 비춰주는 장난 웹게임.">
+<meta name="dopasharp:game" content="truth-mirror">
+<link rel="canonical" href="https://dopasharp.github.io/truth-mirror/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DOPASHARP">
+<meta property="og:title" content="진실의 거울 🪞">
+<meta property="og:description" content="거울아 거울아, 세상에서 가장 예쁜 사람은 누구니? 거울은 절대 거짓말을 하지 않는다…">
+<meta property="og:url" content="https://dopasharp.github.io/truth-mirror/">
+<meta property="og:image" content="https://dopasharp.github.io/truth-mirror/og/mirror.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B0E0D">
+<link rel="icon" href="dopasharp/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dopasharp/tokens.css">
+<link rel="stylesheet" href="dopasharp/components.css">
+<script src="dopasharp/dopasharp.js" defer></script>
 <style>
+  /* The mirror keeps its own mystic purple and gold inside the DOPA# frame; Nanum Myeongjo is the mirror's voice. */
   :root {
     --bg: #0d0716;
     --bg2: #2a1450;
@@ -30,7 +45,7 @@
     min-height: 100dvh;
     background: radial-gradient(ellipse at 50% 30%, var(--bg2) 0%, var(--bg) 70%) fixed, var(--bg);
     color: var(--text);
-    font-family: 'Gowun Dodum', system-ui, sans-serif;
+    font-family: var(--font-body);
     overflow-x: hidden;
     word-break: keep-all;
     -webkit-tap-highlight-color: transparent;
@@ -54,7 +69,8 @@
     min-height: 100dvh; max-width: 480px; margin: 0 auto;
     padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
   }
-  header { width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+  main > .dopa-header { width: 100%; }
+  .titlebar { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
   h1 {
     font-family: 'Nanum Myeongjo', serif; font-weight: 800;
     font-size: clamp(26px, 7.5vw, 36px); letter-spacing: .12em;
@@ -63,8 +79,8 @@
     filter: drop-shadow(0 0 12px rgba(230, 184, 74, .35));
   }
   .sound {
-    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-    width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(230, 184, 74, .4);
+    position: absolute; right: 0; bottom: 0;
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(230, 184, 74, .4);
     background: rgba(255, 255, 255, .05); font-size: 18px; cursor: pointer;
   }
 
@@ -177,52 +193,58 @@
     -webkit-background-clip: text; background-clip: text;
     filter: drop-shadow(0 0 14px rgba(255, 59, 92, .55));
   }
-  .answer-sub { margin-top: 6px; color: var(--muted); font-size: 15px; }
+  .answer-sub { margin-top: 6px; color: var(--muted); font-size: var(--text-body); line-height: var(--leading-body); }
   @keyframes pop { from { opacity: 0; transform: scale(.6); } }
 
   /* ---------- 질문 / 버튼 ---------- */
   .questions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
   .btn {
-    min-height: 52px; padding: 10px 12px; border-radius: 16px; cursor: pointer;
+    min-height: var(--button-height); padding: 10px 12px; border-radius: var(--radius-md); cursor: pointer;
     border: 1px solid rgba(230, 184, 74, .45);
     background: linear-gradient(180deg, rgba(120, 80, 190, .35), rgba(40, 20, 80, .55));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 6px 18px rgba(0, 0, 0, .35);
-    font-size: 15px; line-height: 1.3; transition: transform .1s, background .2s;
+    font-size: 15px; font-weight: 600; line-height: 1.3; transition: transform var(--duration-fast), background var(--duration-normal);
   }
-  .btn:active { transform: scale(.96); }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible, .sound:focus-visible, .intro-wake:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
   .btn.gold {
     border-color: transparent; color: #2b1800; font-weight: 700;
     background: linear-gradient(180deg, var(--gold1), var(--gold2));
   }
   .custom { width: 100%; display: flex; gap: 8px; }
   .custom input {
-    flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 14px;
+    flex: 1; min-width: 0; min-height: var(--button-height); padding: 0 14px; border-radius: var(--radius-md);
     border: 1px solid rgba(230, 184, 74, .35); background: rgba(255, 255, 255, .06); font-size: 16px;
     -webkit-user-select: text; user-select: text;
   }
   .custom input::placeholder { color: rgba(185, 166, 214, .7); }
   .custom input:focus { outline: 2px solid var(--gold2); outline-offset: 1px; }
-  .custom .btn { min-height: 48px; padding: 0 18px; }
-  .after { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
-  .after .wide { grid-column: 1 / -1; }
-  .hint { color: var(--muted); font-size: 12px; text-align: center; opacity: .8; }
+  .custom .btn { padding: 0 18px; }
+  .after { width: 100%; margin-top: 4px; }
+  .hint { color: var(--muted); font-size: var(--text-small); text-align: center; }
+  .more { width: 100%; text-align: center; }
 
   body:not([data-view="idle"]) .idle-only { display: none !important; }
   body:not([data-view="done"]) .done-only { display: none !important; }
 
   /* ---------- 시작 화면 ---------- */
   .intro {
-    position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 18px; padding: 24px; text-align: center; cursor: pointer;
+    position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column;
+    padding: max(12px, env(safe-area-inset-top)) 20px 0;
     background: radial-gradient(ellipse at 50% 40%, rgba(42, 20, 80, .97), rgba(13, 7, 22, .99));
-    border: none; width: 100%; transition: opacity .6s;
+    transition: opacity .6s;
   }
   .intro.hide { opacity: 0; pointer-events: none; }
+  .intro-wake {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 18px; padding: 24px 0; text-align: center; cursor: pointer; border: none; background: none; border-radius: var(--radius-xl);
+  }
+  .intro-wake .dopa-label { color: var(--gold2); }
+  .intro-wake .dopa-button { margin-top: 6px; min-width: 220px; }
   .intro-icon { font-size: 76px; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 0 24px var(--glow)); }
-  .intro h2 { font-family: 'Nanum Myeongjo', serif; font-weight: 800; font-size: 28px; color: var(--gold1); letter-spacing: .1em; }
-  .intro p { color: var(--muted); line-height: 1.6; }
-  .intro .tap { color: #fff; font-size: 17px; animation: pulse 1.6s ease-in-out infinite; }
-  .intro small { color: var(--muted); opacity: .7; font-size: 12px; max-width: 300px; line-height: 1.5; }
+  .intro-title { display: block; font-family: 'Nanum Myeongjo', serif; font-weight: 800; font-size: var(--text-h1); line-height: var(--leading-tight); color: var(--gold1); letter-spacing: .06em; }
+  .intro-copy { display: block; color: var(--muted); line-height: var(--leading-body); }
+  .intro small { color: var(--muted); font-size: var(--text-small); max-width: 300px; line-height: 1.5; }
   @keyframes float { 50% { transform: translateY(-10px); } }
   @keyframes pulse { 50% { opacity: .35; } }
 
@@ -238,7 +260,7 @@
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (prefers-reduced-motion: reduce) {
-    .mist, .star, .intro-icon, .eye { animation: none !important; }
+    .mist, .star, .intro-icon, .eye, .answer { animation: none !important; }
     .glass.evil.reveal { animation: none; }
   }
 </style>
@@ -246,19 +268,25 @@
 <body data-view="idle">
 <div class="stars" aria-hidden="true"></div>
 
-<button class="intro" id="intro" type="button">
-  <div class="intro-icon">🪞</div>
-  <h2>진실의 거울</h2>
-  <p>이 거울은 절대<br>거짓말을 하지 않는다…</p>
-  <p class="tap" id="introTap">거울을 깨우려면 화면을 터치하세요</p>
-  <small>카메라는 거울에 비추는 데만 쓰여요.<br>사진은 어디에도 저장·전송되지 않아요.</small>
-</button>
+<div class="intro" id="intro">
+  <header data-dopa="header"></header>
+  <button class="intro-wake" id="introWake" type="button">
+    <span class="dopa-label">MYSTIC CAMERA GAME</span>
+    <span class="intro-icon" aria-hidden="true">🪞</span>
+    <span class="intro-title">진실의 거울</span>
+    <span class="intro-copy">이 거울은 절대<br>거짓말을 하지 않는다…</span>
+    <span class="dopa-button" id="introTap">거울 깨우기</span>
+    <small>🔊 소리를 켜고 즐겨주세요 · 카메라 영상은 어디에도 저장되지 않아요</small>
+  </button>
+  <footer data-dopa="footer"></footer>
+</div>
 
 <main>
-  <header>
+  <header data-dopa="header"></header>
+  <div class="titlebar">
     <h1>진실의 거울</h1>
     <button class="sound" id="sound" type="button" aria-label="소리 끄기">🔊</button>
-  </header>
+  </div>
 
   <div class="mirror-wrap">
     <svg class="crest" viewBox="0 0 74 46" aria-hidden="true">
@@ -304,13 +332,16 @@
     <button class="btn gold" type="submit">묻기</button>
   </form>
 
-  <div class="after done-only">
-    <button class="btn gold" id="saveBtn" type="button">📸 사진 저장</button>
-    <button class="btn" id="againBtn" type="button">🔁 다시 묻기</button>
-    <button class="btn wide" id="shareBtn" type="button">😈 친구도 당하게 하기</button>
+  <div class="after dopa-actions done-only">
+    <button class="dopa-button" id="saveBtn" type="button">📸 거울 사진 저장</button>
+    <button class="dopa-button dopa-button--secondary" id="againBtn" type="button">다시 묻기</button>
+    <button class="dopa-button dopa-button--secondary" id="linkBtn" type="button">링크 공유</button>
+    <button class="dopa-button dopa-button--secondary dopa-button--wide dopa-challenge" id="shareBtn" type="button">😈 친구도 당하게 하기</button>
   </div>
+  <div class="more done-only"><button class="dopa-button dopa-button--tertiary" type="button" data-dopa-more>다른 DOPA# 게임 보기</button></div>
 
   <p class="hint idle-only">"거울아 거울아…" 질문을 골라보세요</p>
+  <footer data-dopa="footer"></footer>
 </main>
 
 <div class="toast" id="toast" role="status"></div>
@@ -375,7 +406,7 @@ $('#custom').addEventListener('submit', (e) => {
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 /* ---------- 시작: 카메라 켜기 ---------- */
-$('#intro').addEventListener('click', async () => {
+$('#introWake').addEventListener('click', async () => {
   const intro = $('#intro');
   if (intro.dataset.busy) return;
   intro.dataset.busy = '1';
@@ -410,6 +441,7 @@ async function ask(q) {
   busy = true;
   current = q;
   ensureAudio();
+  window.DopaSharp?.track('game_start', { mood: q.mood, custom: !q.btn });
   document.body.dataset.view = 'asking';
   $('#asked').textContent = `“거울아 거울아, ${q.ask}”`;
   glass.className = 'glass thinking talking' + (q.mood === 'evil' ? ' evil' : '');
@@ -436,6 +468,7 @@ async function ask(q) {
   document.body.dataset.view = 'done';
   answer.style.animation = 'none'; answer.offsetHeight; answer.style.animation = '';
   rain(q.rain);
+  window.DopaSharp?.track('game_complete', { mood: q.mood, camera: !!stream });
   speak(`${q.answer.replace(/…/g, '')} ${q.sub.replace(/[()]/g, '')}`);
   await wait(1000);
   glass.classList.remove('flashing');
@@ -457,7 +490,7 @@ function reset() {
   $('#asked').textContent = '';
   showMsg('무엇이 궁금하냐…');
 }
-$('#againBtn').onclick = reset;
+$('#againBtn').onclick = () => { window.DopaSharp?.track('game_retry'); reset(); };
 
 /* ---------- 소리 ---------- */
 $('#sound').onclick = () => {
@@ -543,6 +576,7 @@ function toast(text) {
 /* ---------- 사진 저장 ---------- */
 $('#saveBtn').onclick = async () => {
   if (!current) return;
+  window.DopaSharp?.track('share_click', { method: 'photo' });
   const blob = await capture(current);
   const file = new File([blob], '진실의거울.png', { type: 'image/png' });
   if (navigator.canShare?.({ files: [file] })) {
@@ -635,21 +669,28 @@ async function capture(q) {
   x.fillText(q.answer, W / 2, 1265);
   x.shadowBlur = 0;
   x.fillStyle = '#b9a6d6';
-  fitFont(x, q.sub, 400, '"Gowun Dodum", sans-serif', 38, W - 120);
-  x.fillText(q.sub, W / 2, 1350);
+  fitFont(x, q.sub, 500, '"Pretendard Variable", sans-serif', 38, W - 120);
+  x.fillText(q.sub, W / 2, 1330);
+
+  // DOPA# 서명
+  x.fillStyle = '#D9FF44';
+  x.font = 'italic 900 30px "Pretendard Variable", sans-serif';
+  x.fillText('D#', W / 2 - 170, 1400);
+  x.fillStyle = 'rgba(247,246,242,.7)';
+  x.font = '700 22px "Pretendard Variable", sans-serif';
+  x.fillText('DOPASHARP · TRUTH MIRROR', W / 2 + 20, 1401);
 
   return new Promise((r) => c.toBlob(r, 'image/png'));
 }
 
 /* ---------- 친구에게 공유 ---------- */
-$('#shareBtn').onclick = async () => {
-  const url = location.origin + location.pathname;
-  const data = { title: '🪞 진실의 거울', text: '거울아 거울아… 너도 한번 물어봐 ✨', url };
-  if (navigator.share) {
-    try { await navigator.share(data); return; } catch (err) { if (err.name === 'AbortError') return; }
-  }
-  try { await navigator.clipboard.writeText(url); toast('링크를 복사했어요! 친구에게 보내세요 😈'); }
-  catch { toast(url); }
+$('#shareBtn').onclick = () => {
+  window.DopaSharp?.track('share_click', { method: 'challenge' });
+  window.DopaSharp?.share({ title: '🪞 진실의 거울', text: '거울아 거울아… 너도 한번 물어봐 ✨', url: location.origin + location.pathname }, '링크를 복사했어요! 친구에게 보내세요 😈');
+};
+$('#linkBtn').onclick = () => {
+  window.DopaSharp?.track('share_click', { method: 'link' });
+  window.DopaSharp?.share({ title: '진실의 거울 | DOPA#', url: location.origin + location.pathname }, '링크를 복사했어요.');
 };
 </script>
 </body>
